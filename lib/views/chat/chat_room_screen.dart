@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,7 +85,7 @@ class _ChatState extends State<Chat> {
                   )
                 : CircleAvatar(
                     radius: 20,
-                    backgroundImage: NetworkImage(widget.image!),
+                    backgroundImage: CachedNetworkImageProvider(widget.image!),
                   ),
             SizedBox(
               width: 5,
@@ -100,7 +101,7 @@ class _ChatState extends State<Chat> {
                   ),
                 ),
                 myText(
-                  text: 'sara_smith',
+                  text: widget.uid,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -387,7 +388,8 @@ class _ChatState extends State<Chat> {
                           ),
                         )
                       : CircleAvatar(
-                          backgroundImage: NetworkImage(widget.image!),
+                          backgroundImage:
+                              CachedNetworkImageProvider(widget.image!),
                         ),
                 ),
                 Container(
@@ -515,7 +517,8 @@ class _ChatState extends State<Chat> {
                         topLeft: Radius.circular(18),
                         bottomLeft: Radius.circular(18)),
                     image: DecorationImage(
-                        image: NetworkImage(message), fit: BoxFit.fill)),
+                        image: CachedNetworkImageProvider(message),
+                        fit: BoxFit.fill)),
               ),
             ],
           ),
@@ -571,7 +574,8 @@ class _ChatState extends State<Chat> {
                         ),
                       )
                     : CircleAvatar(
-                        backgroundImage: NetworkImage(widget.image!),
+                        backgroundImage:
+                            CachedNetworkImageProvider(widget.image!),
                       ),
               ),
               Container(
@@ -585,7 +589,8 @@ class _ChatState extends State<Chat> {
                         topLeft: Radius.circular(18),
                         bottomRight: Radius.circular(18)),
                     image: DecorationImage(
-                        image: NetworkImage(message), fit: BoxFit.fill)),
+                        image: CachedNetworkImageProvider(message),
+                        fit: BoxFit.fill)),
               ),
             ],
           ),
@@ -834,7 +839,8 @@ class _ChatState extends State<Chat> {
                         ),
                       )
                     : CircleAvatar(
-                        backgroundImage: NetworkImage(widget.image!),
+                        backgroundImage:
+                            CachedNetworkImageProvider(widget.image!),
                       ),
               ),
               Container(

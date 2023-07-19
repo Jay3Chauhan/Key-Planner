@@ -1,10 +1,17 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:keypanner/services/payment_service/makepaymentwithrazorpay.dart';
 import 'package:keypanner/services/payment_service/payment_service.dart';
-
+import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
+import 'package:keypanner/views/home/home_screen.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../utils/app_color.dart';
 import '../../widgets/my_widgets.dart';
 
@@ -41,6 +48,9 @@ class _CheckOutViewState extends State<CheckOutView> {
   @override
   void initState() {
     // TODO: implement initState
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
     super.initState();
 
     try {
@@ -53,6 +63,63 @@ class _CheckOutViewState extends State<CheckOutView> {
     }
   }
 
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Payment Successful'),
+          content: Text('Your payment is successful. Please close.'),
+          actions: [
+            ElevatedButton(
+              child: Text('Close'),
+              onPressed: () {
+                joinEvent(widget.eventDoc!.id);
+                Navigator.of(context).pop();
+                Get.offAll(() => BottomBarView());
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Do something when payment fails
+    print("Payment Failed");
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet is selected
+  }
+  var _razorpay = Razorpay();
+  String? _paymentId;
+  String calculateAmount(String amount) {
+    final a = (int.parse(amount)) * 100;
+    return a.toString();
+  }
+
+  void makepaymentWithRazorpay(
+      {required String amount, required String eventId}) {
+    final options = {
+      'key': 'rzp_test_rosARnIA70Su82',
+      'amount': int.parse(widget.eventDoc!.get('price')) *
+          100, //in the smallest currency sub-unit.
+      'name': 'Key Planner',
+      // 'order_id': 'order_EMBFqjDHEEn80l', // Generate order_id using Orders API
+      'description': (widget.eventDoc!.get('event_name')),
+      'timeout': 300, // in seconds
+      'prefill': {'contact': '9123456789', 'email': 'gaurav.kumar@example.com'}
+    };
+    options;
+    _razorpay.open(options);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -321,7 +388,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                     ),
                   ),
                   myText(
-                    text: 'Paypal',
+                    text: 'Razorpay',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -355,7 +422,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                     ),
                   ),
                   myText(
-                    text: 'Strip',
+                    text: 'Stripe',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
@@ -430,6 +497,12 @@ class _CheckOutViewState extends State<CheckOutView> {
                               '${int.parse(widget.eventDoc!.get('price')) + 2}',
                           eventId: widget.eventDoc!.id);
                     }
+                    if (selectedRadio == 2) {
+                      makepaymentWithRazorpay(
+                          amount:
+                              '${int.parse(widget.eventDoc!.get('price')) + 2}',
+                          eventId: widget.eventDoc!.id);
+                    }
                   },
                   text: 'Book Now',
                 ),
@@ -440,4 +513,30 @@ class _CheckOutViewState extends State<CheckOutView> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    _razorpay.clear(); // Removes all listeners
+
+    super.dispose();
+  }
+}
+
+void joinEvent(String eventId) {
+  FirebaseFirestore.instance.collection('events').doc(eventId).set(
+    {
+      'joined': FieldValue.arrayUnion([FirebaseAuth.instance.currentUser!.uid]),
+      'max_entries': FieldValue.increment(-1),
+    },
+    SetOptions(merge: true),
+  ).then((value) {
+    FirebaseFirestore.instance.collection('booking').doc(eventId).set({
+      'booking': FieldValue.arrayUnion([
+        {'uid': FirebaseAuth.instance.currentUser!.uid, 'tickets': 1}
+      ])
+    });
+  }).catchError((error) {
+    // Handle error if necessary
+    print('Error joining event: $error');
+  });
 }

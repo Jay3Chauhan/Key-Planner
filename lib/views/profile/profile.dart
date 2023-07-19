@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:keypanner/controller/data_controller.dart';
 import 'package:keypanner/views/home/menu_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../model/ticket_model.dart';
 import '../../utils/app_color.dart';
@@ -203,7 +204,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : CircleAvatar(
                                       radius: 56,
                                       backgroundColor: Colors.white,
-                                      backgroundImage: NetworkImage(
+                                      backgroundImage:
+                                          CachedNetworkImageProvider(
                                         image,
                                       )),
                               // child: Image.asset(

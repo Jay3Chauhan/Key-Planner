@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keypanner/controller/auth_controller.dart';
+import 'package:keypanner/views/auth/email_screen.dart';
 import 'package:keypanner/views/profile/add_profile.dart';
 
 import '../../utils/app_color.dart';
@@ -366,6 +367,7 @@ class _LoginViewState extends State<LoginView> {
               }
             },
             controller: confirmPasswordController),
+       
         Obx(() => authController.isLoading.value
             ? Center(
                 child: CircularProgressIndicator(),

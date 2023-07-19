@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -113,11 +114,17 @@ class _EventPageViewState extends State<EventPageView> {
               ),
               Row(
                 children: [
+                  // CircleAvatar(
+                  //   backgroundImage: NetworkImage(
+                  //     image,
+                  //   ),
+                  //   radius: 20,
+                  // ),
                   CircleAvatar(
-                    backgroundImage: NetworkImage(
+                    backgroundImage: CachedNetworkImageProvider(
                       image,
                     ),
-                    radius: 20,
+                    // child: Icon(Icons.error),
                   ),
                   SizedBox(
                     width: 10,
@@ -236,8 +243,8 @@ class _EventPageViewState extends State<EventPageView> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
                   image: DecorationImage(
-                    image: NetworkImage(eventImage),
-                    fit: BoxFit.cover,
+                    image: CachedNetworkImageProvider(eventImage),
+                    fit: BoxFit.scaleDown,
                   ),
                 ),
               ),
@@ -267,7 +274,8 @@ class _EventPageViewState extends State<EventPageView> {
                             margin: EdgeInsets.only(left: 10),
                             child: CircleAvatar(
                               minRadius: 13,
-                              backgroundImage: NetworkImage(image),
+                              backgroundImage:
+                                  CachedNetworkImageProvider(image),
                             ),
                           );
                         },

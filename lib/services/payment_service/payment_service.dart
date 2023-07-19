@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,7 +26,6 @@ Future<void> makePayment(BuildContext context,
         style: ThemeMode.dark,
         merchantCountryCode: 'US',
         merchantDisplayName: 'EMS',
-
       ),
     );
 

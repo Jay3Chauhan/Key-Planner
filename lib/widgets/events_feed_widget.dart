@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -109,10 +110,13 @@ Widget buildCard(
           child: Container(
             // child: Image.network(image!,fit: BoxFit.fill,),
             decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: NetworkImage(image!), fit: BoxFit.fill),
-              borderRadius: BorderRadius.circular(10),
-            ),
+                // image: DecorationImage(
+                //     image: NetworkImage(image!), fit: BoxFit.fill),
+                // borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                    image: CachedNetworkImageProvider(image!),
+                    fit: BoxFit.fill),
+                borderRadius: BorderRadius.circular(10)),
 
             width: double.infinity,
             height: Get.width * 0.5,
@@ -209,7 +213,7 @@ Widget buildCard(
                       margin: EdgeInsets.only(left: 10),
                       child: CircleAvatar(
                         minRadius: 13,
-                        backgroundImage: NetworkImage(image),
+                        backgroundImage: CachedNetworkImageProvider(image),
                       ),
                     );
                   },
@@ -357,7 +361,7 @@ EventItem(DocumentSnapshot event) {
             child: CircleAvatar(
               radius: 25,
               backgroundColor: Colors.blue,
-              backgroundImage: NetworkImage(image),
+              backgroundImage: CachedNetworkImageProvider(image),
             ),
           ),
           SizedBox(
@@ -453,9 +457,15 @@ EventsIJoined() {
           children: [
             Row(
               children: [
+                // CircleAvatar(
+                //   backgroundImage: NetworkImage(userImage),
+                //   radius: 20,
+                // ),
                 CircleAvatar(
-                  backgroundImage: NetworkImage(userImage),
-                  radius: 20,
+                  backgroundImage: CachedNetworkImageProvider(
+                    userImage,
+                  ),
+                  // child: Icon(Icons.error),
                 ),
                 SizedBox(
                   width: 10,
@@ -560,7 +570,8 @@ EventsIJoined() {
                                       margin: EdgeInsets.only(left: 10),
                                       child: CircleAvatar(
                                         minRadius: 13,
-                                        backgroundImage: NetworkImage(image),
+                                        backgroundImage:
+                                            CachedNetworkImageProvider(image),
                                       ),
                                     );
                                   },

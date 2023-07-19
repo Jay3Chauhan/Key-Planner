@@ -6,10 +6,13 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keypanner/utils/app_constants.dart';
+import 'package:keypanner/views/auth/email_screen.dart';
+
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'views/bottom_nav_bar/bottom_bar_view.dart';
 import 'views/onboarding_screen.dart';
+
 // flutter_stripe: ^3.1.0
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print(message.data.toString());
@@ -36,8 +39,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
+      title: 'KEY PLANNER',
       theme: ThemeData(
+        //useMaterial3: true,
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context)
               .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
@@ -50,3 +54,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+//class Mystore extends VxStore{}

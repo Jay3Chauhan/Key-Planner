@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keypanner/controller/auth_controller.dart';
+import 'package:keypanner/views/auth/email_screen.dart';
 
 import '../../utils/app_color.dart';
 import '../../widgets/my_widgets.dart';

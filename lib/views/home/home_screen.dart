@@ -14,6 +14,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DataController dataController = Get.find<DataController>();
 
+  Future<void> _refreshData() async {
+    // Perform the data refreshing tasks here
+    // You can update the data or make API calls
+
+    // Simulate a delay for demonstration purposes
+    await Future.delayed(Duration(seconds: 2));
+
+    // Mark the refresh as completed by setting the state
+    setState(() {
+      EventsFeed();
+      // Update the necessary data here
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,19 +43,24 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 CustomAppBar(),
                 Text(
-                  "What Going on today",
+                  "What's Going on Today",
                   style: GoogleFonts.raleway(
-                      fontWeight: FontWeight.bold, fontSize: 20),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
                 SizedBox(
                   height: Get.height * 0.02,
                 ),
-                EventsFeed(),
+                RefreshIndicator(
+                  onRefresh: _refreshData,
+                  child: EventsFeed(),
+                ),
                 Obx(() => dataController.isUsersLoading.value
                     ? Center(
                         child: CircularProgressIndicator(),
                       )
-                    : EventsIJoined())
+                    : EventsIJoined()),
               ],
             ),
           ),

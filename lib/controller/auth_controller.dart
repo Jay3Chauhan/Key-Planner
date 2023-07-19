@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
 import 'package:keypanner/views/onboarding_screen.dart';
 import 'package:keypanner/views/profile/add_profile.dart';
+import 'package:keypanner/views/profile/add_profilewithgoogle.dart';
 
 //import '../views/bottom_nav_bar/bottom_bar_view.dart';
 //import '../views/profile/add_profile.dart';
@@ -108,10 +110,35 @@ class AuthController extends GetxController {
       accessToken: googleAuth?.accessToken,
       idToken: googleAuth?.idToken,
     );
-
+    final User userDetails =
+        (await FirebaseAuth.instance.signInWithCredential(credential)).user!;
+    String? _name;
+    String? _email;
+    String? _imageUrl;
+    String? _uid;
+    bool _isLogin = false;
+    String? _providerisGoogle;
+    String? _providerisFacebook;
     // Once signed in, return the UserCredential
     FirebaseAuth.instance.signInWithCredential(credential).then((value) {
       isLoading(false);
+      //SnackBar(content: Text("Welcome ${userDetails.displayName}"));
+      Get.snackbar("Welcome", "${userDetails.displayName}");
+      _name = userDetails.displayName;
+      _email = userDetails.email;
+      _imageUrl = userDetails.photoURL;
+      _uid = userDetails.uid;
+      _providerisGoogle = "Google";
+      _providerisFacebook = "Facebook";
+      _isLogin = true;
+      String uid = FirebaseAuth.instance.currentUser!.uid;
+
+      FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'image': _imageUrl,
+        'first': _name,
+      });
+
+      /// cEHCKING VALUE IN PROGILE PAGE TO HERE
 
       ///SuccessFull loged in
       Get.to(() => ProfileScreen());
