@@ -117,19 +117,22 @@ Widget buildCard(
             func!();
           },
           child: Container(
-            // child: Image.network(image!,fit: BoxFit.fill,),
+            //  /child: Image.network(image!,fit: BoxFit.fill,),
             decoration: BoxDecoration(
                 // image: DecorationImage(
                 //     image: NetworkImage(image!), fit: BoxFit.fill),
                 // borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                    image: CachedNetworkImageProvider(image!),
-                    fit: BoxFit.fill),
+                // image: DecorationImage(
+                //     image: CachedNetworkImageProvider(image!),
+                //     fit: BoxFit.fill,
+                //     // colorFilter: ColorFilter.mode(Colors.grey, BlendMode.bl)
+                //      ),
                 borderRadius: BorderRadius.circular(10)),
 
-            width: double.infinity,
-            height: Get.width * 0.5,
+            // width: double.infinity,
+            // height: Get.width * 0.5,
             //color: Colors.red,
+            child: CachedNetworkImage(imageUrl: image!, fit: BoxFit.fitWidth),
           ),
         ),
         SizedBox(
@@ -138,31 +141,40 @@ Widget buildCard(
         Container(
           padding: const EdgeInsets.all(8.0),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                alignment: Alignment.center,
-                width: 41,
-                height: 24,
-                // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: Color(0xffADD8E6))),
-                child: Text(
-                  '${dateInformation[0]}-${dateInformation[1]}',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      width: 41,
+                      height: 24,
+                      // padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Color(0xffADD8E6))),
+                      child: Text(
+                        '${dateInformation[0]}-${dateInformation[1]}',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 18,
+                    ),
+                    Flexible(
+                      child: Text(
+                        text,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 18),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(
-                width: 18,
-              ),
-              Text(
-                text,
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
-              ),
-              Spacer(),
               InkWell(
                 onTap: () {
                   if (eventSavedByUsers
@@ -389,13 +401,15 @@ EventItem(DocumentSnapshot event) {
       SizedBox(
         height: Get.height * 0.01,
       ),
-      buildCard(
-          image: eventImage,
-          text: event.get('event_name'),
-          eventData: event,
-          func: () {
-            Get.to(() => EventPageView(event, user));
-          }),
+      Container(
+        child: buildCard(
+            image: eventImage,
+            text: event.get('event_name'),
+            eventData: event,
+            func: () {
+              Get.to(() => EventPageView(event, user));
+            }),
+      ),
       SizedBox(
         height: 15,
       ),

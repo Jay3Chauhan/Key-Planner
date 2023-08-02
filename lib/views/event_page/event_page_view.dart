@@ -210,7 +210,8 @@ class _EventPageViewState extends State<EventPageView> {
               SizedBox(
                 height: 15,
               ),
-              Row(
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   Container(
                     decoration: BoxDecoration(
@@ -226,25 +227,13 @@ class _EventPageViewState extends State<EventPageView> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 10,
-                  ),
+                  SizedBox(width: 10),
                   Text(
                     "${widget.eventData.get('event_name')}",
                     style: TextStyle(
-                        fontSize: 18,
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "${widget.eventData.get('date')}",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w300,
+                      fontSize: 18,
+                      color: AppColors.black,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -268,6 +257,21 @@ class _EventPageViewState extends State<EventPageView> {
                       fontWeight: FontWeight.w300,
                     ),
                   ),
+                  Column(
+                    children: [
+                      SizedBox(
+                        width: 35,
+                      ),
+                      Text(
+                        "${widget.eventData.get('date')}",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
               SizedBox(
