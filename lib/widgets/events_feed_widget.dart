@@ -53,7 +53,11 @@ Widget EventsFeed() {
 }
 
 Widget buildCard(
-    {String? image, text, Function? func, DocumentSnapshot? eventData}) {
+    {String? image,
+    text,
+    String? price,
+    Function? func,
+    DocumentSnapshot? eventData}) {
   DataController dataController = Get.find<DataController>();
 
   List joinedUsers = [];
@@ -74,11 +78,16 @@ Widget buildCard(
   List comments = [];
 
   List userLikes = [];
-
+  List eventprice = [];
   try {
     userLikes = eventData!.get('likes');
   } catch (e) {
     userLikes = [];
+  }
+  try {
+    eventprice = eventData!.get('price');
+  } catch (e) {
+    //  eventprice = [];
   }
 
   try {
@@ -132,7 +141,11 @@ Widget buildCard(
             // width: double.infinity,
             // height: Get.width * 0.5,
             //color: Colors.red,
-            child: CachedNetworkImage(imageUrl: image!, fit: BoxFit.fitWidth),
+            child: CachedNetworkImage(
+              imageUrl: image!,
+              fit: BoxFit.fitWidth,
+              // fadeInCurve: Curves.easeIn,
+            ),
           ),
         ),
         SizedBox(
@@ -172,6 +185,7 @@ Widget buildCard(
                             fontWeight: FontWeight.w600, fontSize: 18),
                       ),
                     ),
+                    // Text("$eventprice")
                   ],
                 ),
               ),
@@ -215,6 +229,18 @@ Widget buildCard(
         Row(
           children: [
             Container(
+              child: Flexible(
+                  fit: FlexFit.loose,
+                  child: Text(
+                    ("Joined "),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ),
+            Container(
                 width: Get.width * 0.6,
                 height: 50,
                 child: ListView.builder(
@@ -241,6 +267,22 @@ Widget buildCard(
                   itemCount: joinedUsers.length,
                   scrollDirection: Axis.horizontal,
                 )),
+            SizedBox(
+              width: 0,
+            ),
+            Container(
+              child: Flexible(
+                  fit: FlexFit.loose,
+                  child: Text(
+                    ('\₹$price'),
+                    //  price!,
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 0, 0, 0),
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ),
           ],
         ),
         SizedBox(
@@ -406,6 +448,7 @@ EventItem(DocumentSnapshot event) {
             image: eventImage,
             text: event.get('event_name'),
             eventData: event,
+            price: event.get('price'),
             func: () {
               Get.to(() => EventPageView(event, user));
             }),
@@ -564,12 +607,14 @@ EventsIJoined() {
                                   SizedBox(
                                     width: Get.width * 0.06,
                                   ),
-                                  Text(
-                                    name,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: AppColors.black,
+                                  Flexible(
+                                    child: Text(
+                                      name,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: AppColors.black,
+                                      ),
                                     ),
                                   ),
                                 ],
