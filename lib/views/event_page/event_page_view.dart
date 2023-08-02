@@ -91,6 +91,42 @@ class _EventPageViewState extends State<EventPageView> {
 
     // String formattedDate = formatDate(widget.eventData.get('date'));
     //DateFormat("dd-MMM").format(d);
+    void _showImagePopUp(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shadowColor: Colors.transparent,
+            insetAnimationDuration: SelectionOverlay.fadeDuration,
+            backgroundColor:
+                Colors.transparent, // Set the background to transparent.
+            child: Stack(
+              alignment: Alignment
+                  .topRight, // Align the close button to the top-right corner.
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width *
+                      0.8, // 80% of screen width
+                  height: MediaQuery.of(context).size.height *
+                      0.8, // 80% of screen height
+                  child: Image.network(
+                    eventImage,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.close),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pop(); // Close the dialog when the close button is pressed.
+                  },
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -238,6 +274,14 @@ class _EventPageViewState extends State<EventPageView> {
                 height: 10,
               ),
               Container(
+                child: GestureDetector(
+                    onTap: () {
+                      _showImagePopUp(context);
+                    },
+                    child: Image.network(
+                      eventImage,
+                      fit: BoxFit.scaleDown,
+                    )),
                 height: 190,
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -288,7 +332,7 @@ class _EventPageViewState extends State<EventPageView> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "\$${widget.eventData.get('price')}",
+                          "\₹${widget.eventData.get('price')}",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w600,

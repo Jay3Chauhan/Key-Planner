@@ -9,6 +9,7 @@ import 'package:keypanner/utils/app_color.dart';
 import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
 import 'package:keypanner/views/home/home_screen.dart';
 import 'package:keypanner/views/onboarding_screen.dart';
+import 'package:keypanner/views/settings/aboutus.dart';
 import 'package:keypanner/widgets/custom_app_bar.dart';
 import 'package:keypanner/widgets/my_widgets.dart';
 
@@ -578,7 +579,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => BottomBarView()),
+                              builder: (context) => AboutUsPage()),
                         );
                       },
                       child: Text(

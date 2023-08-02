@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_share/flutter_share.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keypanner/controller/data_controller.dart';
@@ -25,6 +26,14 @@ List<String> imageList = [
   'assets/#3.png',
   'assets/#1.png',
 ];
+
+Future<void> share() async {
+//   await FlutterShare.share(
+//       title: 'Example share',
+//       text: 'Example share text',
+//       linkUrl: 'https://flutter.dev/',
+//       chooserTitle: 'Example Chooser Title');
+}
 
 Widget EventsFeed() {
   DataController dataController = Get.find<DataController>();
@@ -62,7 +71,7 @@ Widget buildCard(
     dateInformation = [];
   }
 
-  int comments = 0;
+  List comments = [];
 
   List userLikes = [];
 
@@ -75,7 +84,7 @@ Widget buildCard(
   try {
     comments = eventData!.get('comments').length;
   } catch (e) {
-    comments = 0;
+    comments = [];
   }
 
   List eventSavedByUsers = [];
@@ -313,10 +322,13 @@ Widget buildCard(
               padding: EdgeInsets.all(0.5),
               width: 16,
               height: 16,
-              child: Image.asset(
-                'assets/send.png',
-                fit: BoxFit.contain,
-                color: AppColors.black,
+              child: InkWell(
+                onTap: share,
+                child: Image.asset(
+                  'assets/send.png',
+                  fit: BoxFit.contain,
+                  color: AppColors.black,
+                ),
               ),
             ),
           ],

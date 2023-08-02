@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keypanner/controller/auth_controller.dart';
 import 'package:keypanner/views/auth/email_screen.dart';
+import 'package:keypanner/widgets/events_feed_widget.dart';
 
 import '../../utils/app_color.dart';
 import '../../widgets/my_widgets.dart';
@@ -280,6 +281,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ],
+                ),
+                InkWell(
+                  onTap: share,
                 ),
                 Obx(() => authController!.isProfileInformationLoading.value
                     ? Center(

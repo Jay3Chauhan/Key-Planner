@@ -119,6 +119,43 @@ class _CheckOutViewState extends State<CheckOutView> {
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
+  void _showImagePopUp(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shadowColor: Colors.transparent,
+          insetAnimationDuration: SelectionOverlay.fadeDuration,
+          backgroundColor:
+              Colors.transparent, // Set the background to transparent.
+          child: Stack(
+            alignment: Alignment
+                .topRight, // Align the close button to the top-right corner.
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width *
+                    0.8, // 80% of screen width
+                height: MediaQuery.of(context).size.height *
+                    0.8, // 80% of screen height
+                child: Image.network(
+                  eventImage,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.close),
+                onPressed: () {
+                  Navigator.of(context)
+                      .pop(); // Close the dialog when the close button is pressed.
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -189,16 +226,31 @@ class _CheckOutViewState extends State<CheckOutView> {
                 child: Row(
                   children: [
                     Container(
+                      child: GestureDetector(
+                        onTap: () {
+                          _showImagePopUp(context);
+                        },
+                        child: Image.network(
+                          eventImage,
+                          width:
+                              150, // Set the initial width for the thumbnail image.
+                          height:
+                              150, // Set the initial height for the thumbnail image.
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                       width: 100,
-                      height: 150,
+                      height: 100,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
                           bottomLeft: Radius.circular(10),
                         ),
                         image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(eventImage),
+                          fit: BoxFit.scaleDown,
+                          image: NetworkImage(
+                            eventImage,
+                          ),
                         ),
                       ),
                     ),
@@ -221,14 +273,6 @@ class _CheckOutViewState extends State<CheckOutView> {
                                 ),
                                 SizedBox(
                                   width: 25,
-                                ),
-                                myText(
-                                  text: 'may 15',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w300,
-                                    color: AppColors.black,
-                                  ),
                                 ),
                               ],
                             ),
@@ -268,7 +312,18 @@ class _CheckOutViewState extends State<CheckOutView> {
                               fontWeight: FontWeight.w500,
                               color: AppColors.blue,
                             ),
-                          )
+                          ),
+                          SizedBox(
+                            height: 27,
+                          ),
+                          myText(
+                            text: '\₹${widget.eventDoc!.get('price')}',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w300,
+                              color: AppColors.black,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -453,7 +508,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                   ),
                   Spacer(),
                   myText(
-                    text: '\$${widget.eventDoc!.get('price')}',
+                    text: '\₹${widget.eventDoc!.get('price')}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
