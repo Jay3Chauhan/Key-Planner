@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:keypanner/utils/app_color.dart';
 import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
 import 'package:keypanner/views/onboarding_screen.dart';
 import 'package:keypanner/views/profile/add_profile.dart';
@@ -84,16 +86,59 @@ class AuthController extends GetxController {
     );
 
     // Once signed in, return the UserCredential
-    FirebaseAuth.instance.signInWithCredential(credential).then((value) {
-      isLoading(false);
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-      ///SuccessFull loged in
-      Get.to(() => BottomBarView());
-    }).catchError((e) {
-      /// Error in getting Login
+      User userDetails = userCredential.user!;
+
+      String _name = userDetails.displayName ?? '';
+      String _email = userDetails.email ?? '';
+      String _imageUrl = userDetails.photoURL ?? '';
+      String _uid = userDetails.uid;
+
+      bool _isLogin = true;
+      String _providerisGoogle = "Google";
+      String _providerisFacebook = "Facebook";
+
+      // Check if user already exists in Firestore
+      DocumentSnapshot userSnapshot =
+          await FirebaseFirestore.instance.collection('users').doc(_uid).get();
+
+      if (userSnapshot.exists) {
+        // User exists, retrieve data from Firestore
+        Map<String, dynamic> userData =
+            userSnapshot.data() as Map<String, dynamic>;
+
+        _name = userData['first'] ?? _name;
+        _email = userData['email'] ?? _email;
+        _imageUrl = userData['image'] ?? _imageUrl;
+
+        // Update the user's last login timestamp in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(_uid)
+            .update({'lastLogin': FieldValue.serverTimestamp()});
+      } else {
+        // User doesn't exist, create a new document in Firestore
+        await FirebaseFirestore.instance.collection('users').doc(_uid).set({
+          'image': _imageUrl,
+          'first': _name,
+          'email': _email,
+          'provider': _providerisGoogle, // Set the provider (Google/Facebook)
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+      }
+
+      isLoading(false);
+      Get.snackbar("Welcome", "$_name");
+      Get.to(() => ProfileScreenGoogle());
+    } catch (e) {
       isLoading(false);
       print("Error is $e");
-    });
+      Get.snackbar("Error", "Failed to sign in with Google");
+    }
   }
 
   signupWithGoogle() async {
@@ -168,19 +213,82 @@ class AuthController extends GetxController {
     return imageUrl;
   }
 
-  uploadProfileData(String imageUrl, String firstName, String lastName,
-      String mobileNumber, String dob, String gender) {
+  uploadProfileData(String imageUrl, String username, String firstName,
+      String lastName, String mobileNumber, String dob, String gender) {
     String uid = FirebaseAuth.instance.currentUser!.uid;
 
     FirebaseFirestore.instance.collection('users').doc(uid).set({
       'image': imageUrl,
+      'username': username,
       'first': firstName,
       'last': lastName,
       'dob': dob,
-      'gender': gender
+      'gender': gender,
+      'mobile': mobileNumber,
+      'uid': uid,
     }).then((value) {
       isProfileInformationLoading(false);
       Get.offAll(() => BottomBarView());
+    });
+  }
+
+  Future<void> uploadReportData(
+      String reportText, List<String> responses) async {
+    final user = FirebaseAuth.instance.currentUser;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    final feedbackCollectionRef = FirebaseFirestore.instance
+        .collection('feedbackreport')
+        .doc(uid)
+        .collection('Report');
+
+    await feedbackCollectionRef.add({
+      // 'feedback_text': reportText,
+      'uid': uid,
+      'responses': FieldValue.arrayUnion(responses),
+      'timestamp': FieldValue.serverTimestamp(),
+    }).then((value) {
+      isProfileInformationLoading(false);
+
+      Get.offAll(() => BottomBarView());
+      Get.snackbar(
+        "Report",
+        "Sent Successfully",
+        // backgroundColor: Colors.blue,
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: AppColors.blue,
+        ),
+      );
+    });
+  }
+
+  Future<void> uploadFeedbackData(
+      String feedbacktext, List<String> responses) async {
+    final user = FirebaseAuth.instance.currentUser;
+    String uid = FirebaseAuth.instance.currentUser!.uid;
+    final feedbackCollectionRef = FirebaseFirestore.instance
+        .collection('feedbackreport')
+        .doc(uid)
+        .collection('Feedback');
+
+    await feedbackCollectionRef.add({
+      // 'feedback_text': reportText,
+      'uid': uid,
+      'responses': FieldValue.arrayUnion(responses),
+      'timestamp': FieldValue.serverTimestamp(),
+    }).then((value) {
+      isProfileInformationLoading(false);
+
+      Get.offAll(() => BottomBarView());
+      Get.snackbar(
+        "Feedback",
+        "Sent Successfully",
+        // backgroundColor: Colors.blue,
+        icon: Icon(
+          Icons.check_circle_outline,
+          color: AppColors.blue,
+        ),
+      );
     });
   }
 }

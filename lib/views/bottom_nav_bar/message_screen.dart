@@ -110,7 +110,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         itemCount: dataController.filteredUsers.length,
                         shrinkWrap: true,
                         itemBuilder: (context, index) {
-                          String name = '', image = '';
+                          String name = '', username = '', image = '';
                           try {
                             name = dataController.filteredUsers[index]
                                     .get('first') +
@@ -118,6 +118,12 @@ class _MessageScreenState extends State<MessageScreen> {
                                 dataController.filteredUsers[index].get('last');
                           } catch (e) {
                             name = '';
+                          }
+                          try {
+                            username = dataController.filteredUsers[index]
+                                .get('username');
+                          } catch (e) {
+                            username = '';
                           }
 
                           try {
@@ -154,6 +160,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                     Get.to(() => Chat(
                                           groupId: chatRoomId,
                                           name: name,
+                                          username: username,
                                           image: image,
                                           fcmToken: fcmToken,
                                           uid: dataController

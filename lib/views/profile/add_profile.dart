@@ -31,6 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   TextEditingController firstNameController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController dob = TextEditingController();
@@ -175,6 +176,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   height: Get.width * 0.1,
                 ),
                 textField(
+                    text: 'User Name',
+                    controller: usernameController,
+                    validator: (String input) {
+                      if (usernameController.text.isEmpty) {
+                        Get.snackbar('Warning', 'First Name is required.',
+                            colorText: Colors.white,
+                            backgroundColor: Colors.blue);
+                        return '';
+                      }
+                    }),
+                textField(
                     text: 'First Name',
                     controller: firstNameController,
                     validator: (String input) {
@@ -318,6 +330,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                             authController!.uploadProfileData(
                                 imageUrl,
+                                usernameController.text.trim(),
                                 firstNameController.text.trim(),
                                 lastNameController.text.trim(),
                                 mobileNumberController.text.trim(),
@@ -339,7 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: TextStyle(
                                 color: Color(0xff262628), fontSize: 12)),
                         TextSpan(
-                            text: 'terms, Data policy and cookies policy',
+                            text: 'terms, Data policy and cookies policy!',
                             style: TextStyle(
                                 color: Color(0xff262628),
                                 fontSize: 12,

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keypanner/controller/data_controller.dart';
+import 'package:keypanner/views/notification_screen/notification_screen.dart';
+import 'package:keypanner/views/profile/userfanfollwoing.dart';
 
 import '../model/ticket_model.dart';
 import '../utils/app_color.dart';
@@ -289,9 +291,10 @@ Widget buildCard(
           height: Get.height * 0.03,
         ),
         Row(
+          //mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
-              width: 68,
+              width: 8,
             ),
             InkWell(
               onTap: () {
@@ -315,8 +318,8 @@ Widget buildCard(
                 }
               },
               child: Container(
-                height: 30,
-                width: 30,
+                height: 50,
+                width: 50,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   boxShadow: [
@@ -327,7 +330,7 @@ Widget buildCard(
                 ),
                 child: Icon(
                   Icons.favorite,
-                  size: 14,
+                  size: 30,
                   color:
                       userLikes.contains(FirebaseAuth.instance.currentUser!.uid)
                           ? Colors.red
@@ -336,23 +339,23 @@ Widget buildCard(
               ),
             ),
             SizedBox(
-              width: 3,
+              width: 1,
             ),
             Text(
               '${userLikes.length}',
               style: TextStyle(
                 color: AppColors.black,
-                fontSize: 13,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),
             ),
             SizedBox(
-              width: 20,
+              width: 5,
             ),
             Container(
-              padding: EdgeInsets.all(0.5),
-              width: 17,
-              height: 17,
+              padding: EdgeInsets.all(0.9),
+              width: 50,
+              height: 25,
               child: Image.asset(
                 'assets/message.png',
                 color: AppColors.black,
@@ -364,18 +367,18 @@ Widget buildCard(
             Text(
               '$comments',
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 18,
                 fontWeight: FontWeight.w500,
                 color: AppColors.black,
               ),
             ),
             SizedBox(
-              width: 15,
+              width: 5,
             ),
             Container(
               padding: EdgeInsets.all(0.5),
-              width: 16,
-              height: 16,
+              width: 25,
+              height: 20,
               child: InkWell(
                 onTap: share,
                 child: Image.asset(
@@ -418,27 +421,46 @@ EventItem(DocumentSnapshot event) {
 
   return Column(
     children: [
-      Row(
-        children: [
-          InkWell(
-            onTap: () {
-              Get.to(() => ProfileScreen());
-            },
-            child: CircleAvatar(
-              radius: 25,
-              backgroundColor: Colors.blue,
-              backgroundImage: CachedNetworkImageProvider(image),
+      Container(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                InkWell(
+                  onTap: () {
+                    Get.to(
+                        () => UserfanFollowing(user, dataController.allEvents));
+                  },
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.blue,
+                    backgroundImage: CachedNetworkImageProvider(image),
+                  ),
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${user.get('first')} ${user.get('last')}',
+                      style: GoogleFonts.raleway(
+                          fontWeight: FontWeight.w700, fontSize: 18),
+                    ),
+                    Text(
+                      '${user.get('username')}',
+                      style: GoogleFonts.raleway(
+                          color: AppColors.blue,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14),
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          SizedBox(
-            width: 12,
-          ),
-          Text(
-            '${user.get('first')} ${user.get('last')}',
-            style:
-                GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 18),
-          ),
-        ],
+          ],
+        ),
       ),
       SizedBox(
         height: Get.height * 0.01,

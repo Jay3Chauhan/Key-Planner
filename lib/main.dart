@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:keypanner/utils/app_constants.dart';
 import 'package:keypanner/views/auth/email_screen.dart';
-
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'views/bottom_nav_bar/bottom_bar_view.dart';

@@ -213,20 +213,7 @@ class _EventPageViewState extends State<EventPageView> {
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: Color(0xff0000FF), width: 1.5),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    child: Text(
-                      '${widget.eventData.get('start_time')}',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  SizedBox(width: 10),
                   SizedBox(width: 10),
                   Text(
                     "${widget.eventData.get('event_name')}",
@@ -249,29 +236,63 @@ class _EventPageViewState extends State<EventPageView> {
                   SizedBox(
                     width: 5,
                   ),
-                  Text(
-                    '${widget.eventData.get('location')}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.black,
-                      fontWeight: FontWeight.w300,
+                  Flexible(
+                    child: Text(
+                      '${widget.eventData.get('location')}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.black,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
                   ),
+                ],
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
                   Column(
+                    //mainAxisAlignment: MainAxisAlignment.end,
+
                     children: [
-                      SizedBox(
-                        width: 35,
-                      ),
-                      Text(
-                        "${widget.eventData.get('date')}",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w300,
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          border:
+                              Border.all(color: Color(0xff0000FF), width: 1.5),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                        child: Text(
+                          '${widget.eventData.get('start_time')}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
-                  )
+                  ),
+                  SizedBox(
+                    width: 240,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(color: Color(0xff0000FF), width: 1.5),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: Text(
+                      '${widget.eventData.get('date')}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               SizedBox(

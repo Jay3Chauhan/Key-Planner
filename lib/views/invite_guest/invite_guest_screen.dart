@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 
 import '../../model/ticket_model.dart';
 import '../../utils/app_color.dart';
@@ -15,7 +18,13 @@ class Inviteguest extends StatefulWidget {
 }
 
 class _InviteguestState extends State<Inviteguest> {
-  bool value = false;
+  Future<List<Map>> fetchUsers() async {
+    return (await FirebaseFirestore.instance.collection('users').get())
+        .docs
+        .map((e) => e.data())
+        .toList();
+  }
+
   List<Storycircle> circle = [
     Storycircle(
       image: 'assets/#1.png',
@@ -27,20 +36,11 @@ class _InviteguestState extends State<Inviteguest> {
       image: 'assets/#3.png',
     ),
   ];
-  List<Inviteperson> invite = [
-    Inviteperson(name: 'Sara Smith', image: 'assets/img.png'),
-    Inviteperson(name: 'Robert Particia', image: 'assets/img_1.png'),
-    Inviteperson(name: 'Kishori', image: 'assets/img_2.png'),
-    Inviteperson(name: 'Manesh Yadev', image: 'assets/img_3.png'),
-    Inviteperson(name: 'Jagdeep Samota', image: 'assets/img_4.png'),
-    Inviteperson(name: 'Abhey Saroj', image: 'assets/img_5.png'),
-  ];
+
   @override
   Widget build(BuildContext context) {
     var screenheight = MediaQuery.of(context).size.height;
     var screenwidth = MediaQuery.of(context).size.width;
-    final ButtonStyle style =
-        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 16));
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -63,14 +63,17 @@ class _InviteguestState extends State<Inviteguest> {
                     fillColor: Colors.deepOrangeAccent[2],
                     filled: true,
                     enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     border: UnderlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(10)),
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     hintText: "Search friends to invite",
                     prefixIcon: Image.asset(
                       'assets/search.png',
@@ -86,7 +89,6 @@ class _InviteguestState extends State<Inviteguest> {
                 height: 40,
                 child: ListView.builder(
                   itemCount: circle.length,
-                  //  physics: NeverScrollableScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (ctx, index) {
                     return Row(
@@ -125,18 +127,17 @@ class _InviteguestState extends State<Inviteguest> {
                     ),
                   ),
                   Container(
-                    //alignment: Alignment.center,
-
                     width: 100,
                     height: 31,
                     child: ElevatedButton(
                       style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(4),
-                            ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(4),
                           ),
-                          backgroundColor: AppColors.blue),
+                        ),
+                        backgroundColor: AppColors.blue,
+                      ),
                       onPressed: () {},
                       child: Padding(
                         padding: const EdgeInsets.only(top: 2, left: 2),
@@ -156,50 +157,62 @@ class _InviteguestState extends State<Inviteguest> {
               Container(
                 width: double.infinity,
                 height: screenheight * 0.6,
-                child: ListView.builder(
-                  physics: NeverScrollableScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  itemCount: invite.length,
-                  itemBuilder: (context, index) {
-                    return
-                        //InkWell(
-                        //onTap: () {
-                        //  Get.to(() => Chat());
-                        // },
-                        //  child:
-                        Container(
-                      margin: EdgeInsets.only(bottom: 10),
-                      width: 57,
-                      height: 57,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Row(
-                        //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.all(5),
-                            height: 65,
+                child: FutureBuilder<List<Map>>(
+                  future: fetchUsers(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      List<Map> users = snapshot.data ?? [];
+                      return ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          Map userDoc = users[index];
+                          String userName = userDoc['first'] ??
+                              ""; // Replace with actual field name
+                          String userImage = userDoc['image'] ??
+                              ""; // Replace with actual field name
+                          debugPrint("users number");
+                          debugPrint(users.length.toString());
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 10),
                             width: 57,
-                            child: Image(
-                              image: AssetImage('${invite[index].image}'),
+                            height: 57,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                          ),
-                          SizedBox(
-                            width: 13,
-                          ),
-                          Text(
-                            '${invite[index].name}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.all(5),
+                                  height: 65,
+                                  width: 57,
+                                  child: CircleAvatar(
+                                    backgroundImage:
+                                        CachedNetworkImageProvider(userImage),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 13,
+                                ),
+                                Text(
+                                  userName,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                Spacer(),
+                                ChecksBox(),
+                              ],
                             ),
-                          ),
-                          Spacer(),
-                          ChecksBox(),
-                        ],
-                      ),
-                    );
+                          );
+                        },
+                      );
+                    }
                   },
                 ),
               ),

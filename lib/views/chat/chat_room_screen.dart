@@ -10,18 +10,42 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:keypanner/controller/data_controller.dart';
 import 'package:keypanner/services/notification_service.dart';
 import 'package:keypanner/utils/app_color.dart';
 import 'package:keypanner/widgets/my_widgets.dart';
 
 class Chat extends StatefulWidget {
-  Chat({this.image, this.name, this.groupId, this.fcmToken, this.uid});
+  Chat(
+      {this.image,
+      this.name,
+      this.groupId,
+      this.fcmToken,
+      this.username,
+      this.uid});
 
-  String? image, name, groupId, fcmToken, uid;
+  String? image, name, username, groupId, fcmToken, uid;
 
   @override
   _ChatState createState() => _ChatState();
+}
+
+String formatTimestamp(Timestamp timestamp) {
+  DateTime dateTime = timestamp.toDate();
+  DateTime now = DateTime.now();
+
+  if (dateTime.year == now.year &&
+      dateTime.month == now.month &&
+      dateTime.day == now.day) {
+    return DateFormat.jm().format(dateTime); // Today's message
+  } else if (dateTime.year == now.year &&
+      dateTime.month == now.month &&
+      dateTime.day == now.day - 1) {
+    return 'Yesterday';
+  } else {
+    return DateFormat('MMMM d').format(dateTime); // Other days
+  }
 }
 
 class _ChatState extends State<Chat> {
@@ -91,17 +115,27 @@ class _ChatState extends State<Chat> {
               width: 5,
             ),
             Column(
+              // mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                myText(
-                  text: widget.name,
+                Text(
+                  widget.name!,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: AppColors.black,
                   ),
                 ),
+                // myText(
+                //   text: widget.name,
+                //   style: TextStyle(
+                //     fontSize: 16,
+                //     fontWeight: FontWeight.w600,
+                //     color: AppColors.black,
+                //   ),
+                // ),
                 myText(
-                  text: widget.uid,
+                  text: widget.username!,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w500,
@@ -423,7 +457,7 @@ class _ChatState extends State<Chat> {
                 Padding(
                   padding: const EdgeInsets.only(left: 70, top: 5),
                   child: Text(
-                    "2 days ago",
+                    formatTimestamp(doc.get('timeStamp')),
                     style: TextStyle(
                       color: AppColors.grey,
                       fontWeight: FontWeight.w500,
@@ -442,7 +476,7 @@ class _ChatState extends State<Chat> {
 
   textMessageISent(DocumentSnapshot doc) {
     String message = doc.get('message');
-
+    String time = doc.get('timeStamp').toString();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -462,6 +496,7 @@ class _ChatState extends State<Chat> {
             padding: const EdgeInsets.all(12),
             child: Text(
               message,
+              // time,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 14,
@@ -476,7 +511,7 @@ class _ChatState extends State<Chat> {
             Padding(
               padding: const EdgeInsets.only(top: 5, right: 20),
               child: Text(
-                "Yesterday",
+                formatTimestamp(doc.get('timeStamp')),
                 style: TextStyle(
                   color: AppColors.grey,
                   fontWeight: FontWeight.w500,
@@ -533,7 +568,7 @@ class _ChatState extends State<Chat> {
                   right: 0,
                 ),
                 child: Text(
-                  "06:25 PM",
+                  formatTimestamp(doc.get('timeStamp')),
                   style: TextStyle(
                     color: AppColors.grey,
                     fontWeight: FontWeight.w500,

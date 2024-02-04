@@ -72,6 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     firstNameController.text = dataController!.myDocument!.get('first');
     lastNameController.text = dataController!.myDocument!.get('last');
 
+    String username = dataController!.myDocument!.get('first');
+
     try {
       descriptionController.text = dataController!.myDocument!.get('desc');
     } catch (e) {
@@ -82,6 +84,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       image = dataController!.myDocument!.get('image');
     } catch (e) {
       image = '';
+    }
+    try {
+      username = dataController!.myDocument!.get('username');
+    } catch (e) {
+      username = 'username';
     }
 
     try {
@@ -108,6 +115,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var screenheight = MediaQuery.of(context).size.height;
     var screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          Padding(padding: EdgeInsets.only(right: 20)),
+          InkWell(
+            onTap: () {},
+            child: Image(
+              image: AssetImage('assets/sms.png'),
+              width: 28,
+              height: 25,
+            ),
+          ),
+          SizedBox(
+            width: 25,
+          ),
+          InkWell(
+            onTap: () {
+              Get.to(() => MenuScreen());
+            },
+            child: Image(
+              image: AssetImage('assets/menu.png'),
+              width: 23.33,
+              height: 19,
+            ),
+          ),
+          SizedBox(
+            width: 25,
+          ),
+        ],
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+        title: Text(dataController!.myDocument!.get('username'),
+            style: TextStyle(color: Colors.black)),
+        centerTitle: false,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Stack(
@@ -122,24 +164,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      InkWell(
-                        onTap: () {},
-                        child: Image(
-                          image: AssetImage('assets/sms.png'),
-                          width: 28,
-                          height: 25,
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Get.to(() => MenuScreen());
-                        },
-                        child: Image(
-                          image: AssetImage('assets/menu.png'),
-                          width: 23.33,
-                          height: 19,
-                        ),
-                      ),
+                      // InkWell(
+                      //   onTap: () {},
+                      //   child: Image(
+                      //     image: AssetImage('assets/sms.png'),
+                      //     width: 28,
+                      //     height: 25,
+                      //   ),
+                      // ),
+                      // InkWell(
+                      //   onTap: () {
+                      //     Get.to(() => MenuScreen());
+                      //   },
+                      //   child: Image(
+                      //     image: AssetImage('assets/menu.png'),
+                      //     width: 23.33,
+                      //     height: 19,
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
@@ -463,6 +505,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     //     ],
                     //   ),
                     // ),
+
                     SizedBox(
                       height: 40,
                     ),

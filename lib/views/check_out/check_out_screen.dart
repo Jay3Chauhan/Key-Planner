@@ -11,6 +11,9 @@ import 'package:keypanner/services/payment_service/makepaymentwithrazorpay.dart'
 import 'package:keypanner/services/payment_service/payment_service.dart';
 import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
 import 'package:keypanner/views/home/home_screen.dart';
+import 'package:keypanner/views/home/menu_screen.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server/gmail.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import '../../utils/app_color.dart';
 import '../../widgets/my_widgets.dart';
@@ -74,6 +77,7 @@ class _CheckOutViewState extends State<CheckOutView> {
             ElevatedButton(
               child: Text('Close'),
               onPressed: () {
+                sendConfirmationEmaild();
                 joinEvent(widget.eventDoc!.id);
                 Navigator.of(context).pop();
                 Get.offAll(() => BottomBarView());
@@ -100,6 +104,11 @@ class _CheckOutViewState extends State<CheckOutView> {
     return a.toString();
   }
 
+  String useremaild = FirebaseAuth.instance.currentUser!.email ?? "";
+  String userfullname = dataController.myDocument!.get('first') ?? "";
+  //String userfullname = FirebaseAuth.instance.currentUser!.email ?? "";
+  //String usermobilenumber =
+  // FirebaseAuth.instance.currentUser!.phoneNumber ?? "";
   void makepaymentWithRazorpay(
       {required String amount, required String eventId}) {
     final options = {
@@ -110,13 +119,156 @@ class _CheckOutViewState extends State<CheckOutView> {
       // 'order_id': 'order_EMBFqjDHEEn80l', // Generate order_id using Orders API
       'description': (widget.eventDoc!.get('event_name')),
       'timeout': 300, // in seconds
-      'prefill': {'contact': '9123456789', 'email': 'gaurav.kumar@example.com'}
+      'prefill': {
+        'contact': "usermobilenumber",
+        'email': useremaild,
+        'name': userfullname,
+        'uid': FirebaseAuth.instance.currentUser!.uid,
+      },
     };
     options;
     _razorpay.open(options);
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  Future<void> sendConfirmationEmaild() async {
+    // final smtpServer = gmail('jay.cse@snpitrc.ac.in', 'dqkepdmwwggcuakh');
+    final smtpServer = gmail('ceremomanagement@gmail.com', 'mxlvgpzyfiijfvza');
+
+    final message = Message()
+      ..from = Address('csejaychauhan@gmail.com', 'Jay Chauhan')
+      ..recipients.add(useremaild) // User's email
+      ..subject = 'Payment Confirmation and Booking Details'
+      ..text = 'Thank you for your payment!\n\n'
+          'Your payment ID: \n\n'
+          'Booking details: ${widget.eventDoc!['event_name']} on ${widget.eventDoc!['date']}'
+      ..html = """
+<!DOCTYPE html>
+<html>0
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Booking Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .logo {
+      display: block;
+      margin: 0 auto;
+      max-width: 150px;
+      height: auto;
+    }
+
+    .content {
+      padding: 20px;
+      color: #333333;
+    }
+
+    .event-details {
+      border: 1px solid #dddddd;
+      background-color: #f9f9f9;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden; /* Clear floats */
+    }
+
+    .eventphoto {
+      float: left;
+      width: 150px;
+      height: auto;
+    }
+
+    .event-details-content {
+      float: left;
+      width: 90%;
+      padding-left: 20px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .footer-text {
+      color: #999999;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://www.linkpicture.com/q/Ceremo-Logo-1.png" alt="Event Logo">
+    </div>
+    <div class="content">
+      <h2>Thank You for Booking an Event!</h2>
+      <p>Dear $userfullname,</p>
+      <p>We are delighted to confirm your booking for the following event:</p>
+      
+      <div class="event-details">
+        <div class="eventphoto">
+          <img class="eventphoto" src="$eventImage" alt="Event Logo">
+        </div>
+        <div class="event-details-content">
+          <h3>Event Details:</h3>
+          <p><strong>Event:</strong> ${widget.eventDoc!['event_name']}</p>
+          
+          <p><strong>Date:</strong> ${widget.eventDoc!['date']}</p>
+         
+          <p style="text-align: justify; font-size: 16px;"><strong>Description:</strong> ${widget.eventDoc!.get('description')}</p>
+          
+          <p><strong>Location:</strong> ${widget.eventDoc!['location']}</p>
+
+          <p><strong>Price: ₹</strong> ${widget.eventDoc!['price']}</p>
+        </div>
+      </div>
+      
+      <p>For any questions or concerns, please contact us at support@keyplanner.app.</p>
+      <p>We look forward to seeing you at the event!</p>
+      <p> If you</p>
+      
+      <p>Best regards,</p>
+      <p>The Key Planner Team</p>
+    </div>
+    <div class="footer">
+      <p class="footer-text">© 2023 Key Planner. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
+
+""";
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ${sendReport.toString()}');
+    } on MailerException catch (e) {
+      print('Error sending email: $e');
+    }
   }
 
   void _showImagePopUp(BuildContext context) {
@@ -211,7 +363,7 @@ class _CheckOutViewState extends State<CheckOutView> {
               ),
               Container(
                 width: Get.width,
-                height: 150,
+                height: 180,
                 decoration: BoxDecoration(
                   color: AppColors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -240,7 +392,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                         ),
                       ),
                       width: 100,
-                      height: 100,
+                      height: 180,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(10),
@@ -255,24 +407,36 @@ class _CheckOutViewState extends State<CheckOutView> {
                       ),
                     ),
                     Container(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                       margin: EdgeInsets.all(10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
+                            width: Get.width * 0.6,
                             child: Row(
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                myText(
-                                  text: widget.eventDoc!.get('event_name'),
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.black,
+                                Flexible(
+                                  child: Text(
+                                    widget.eventDoc!.get('event_name'),
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.black,
+                                    ),
                                   ),
                                 ),
+                                // myText(
+                                //   text: widget.eventDoc!.get('event_name'),
+                                //   style: TextStyle(
+                                //     fontSize: 17,
+                                //     fontWeight: FontWeight.w600,
+                                //     color: AppColors.black,
+                                //   ),
+                                // ),
                                 SizedBox(
-                                  width: 25,
+                                  width: 20,
                                 ),
                               ],
                             ),
@@ -293,17 +457,22 @@ class _CheckOutViewState extends State<CheckOutView> {
                               SizedBox(
                                 width: 5,
                               ),
-                              myText(
-                                text: widget.eventDoc!.get('location'),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w300,
+                              Container(
+                                width: Get.width * 0.5,
+                                child: Flexible(
+                                  child: myText(
+                                    text: widget.eventDoc!.get('location'),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  ),
                                 ),
                               )
                             ],
                           ),
                           SizedBox(
-                            height: 7,
+                            height: 5,
                           ),
                           myText(
                             text: widget.eventDoc!.get('date'),
@@ -314,13 +483,13 @@ class _CheckOutViewState extends State<CheckOutView> {
                             ),
                           ),
                           SizedBox(
-                            height: 27,
+                            height: 5,
                           ),
                           myText(
                             text: '\₹${widget.eventDoc!.get('price')}',
                             style: TextStyle(
                               fontSize: 20,
-                              fontWeight: FontWeight.w300,
+                              fontWeight: FontWeight.w900,
                               color: AppColors.black,
                             ),
                           ),
@@ -334,7 +503,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                 height: Get.height * 0.04,
               ),
               myText(
-                text: 'Payment Method',
+                text: "Payment Method",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
@@ -528,7 +697,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                   ),
                   Spacer(),
                   myText(
-                    text: '\$${int.parse(widget.eventDoc!.get('price')) + 2}',
+                    text: '\$${int.parse(widget.eventDoc!.get('price')) + 0}',
                     style: TextStyle(
                       fontSize: 16,
                       color: AppColors.blue,

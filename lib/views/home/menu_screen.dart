@@ -10,6 +10,7 @@ import 'package:keypanner/views/bottom_nav_bar/bottom_bar_view.dart';
 import 'package:keypanner/views/home/home_screen.dart';
 import 'package:keypanner/views/onboarding_screen.dart';
 import 'package:keypanner/views/settings/aboutus.dart';
+import 'package:keypanner/views/settings/feedback_support_screen.dart';
 import 'package:keypanner/widgets/custom_app_bar.dart';
 import 'package:keypanner/widgets/my_widgets.dart';
 
@@ -28,6 +29,16 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+        title: Text(
+          "Settings",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
@@ -35,12 +46,13 @@ class _MenuScreenState extends State<MenuScreen> {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              iconWithTitle(
-                func: () {
-                  Get.back();
-                },
-                text: 'Settings',
-              ),
+              SafeArea(child: SizedBox(height: 10)),
+              // iconWithTitle(
+              //   func: () {
+              //     Get.back();
+              //   },
+              //   text: 'Settings',
+              // ),
               Container(
                 height: 50,
                 decoration: BoxDecoration(
@@ -524,7 +536,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => BottomBarView()),
+                              builder: (context) => FeedbackSupportScreen()),
                         );
                       },
                       child: Text(
